@@ -1,6 +1,8 @@
 package sec02;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -41,6 +43,18 @@ public class JoinServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doProcess(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doProcess(request, response);
+	}
+	
+	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// 요청처리
 		request.setCharacterEncoding("UTF-8");
 		String name = request.getParameter("name");
 		String id = request.getParameter("id");
@@ -50,23 +64,23 @@ public class JoinServlet extends HttpServlet {
 		String[] interests = request.getParameterValues("interests");
 		String department = request.getParameter("department");
 		
-		System.out.println("성명 : " + name
-						  +"\nID : " + id
-						  +"\n비밀번호 : " + pw
-						  +"\n휴대폰 번호 : " + phone
-						  +"\n학년 : " + grade + "학년");
-		System.out.print("관심분야 : ");
+		// 응답처리
+		response.setContentType("text/html;charset=utf-8");
+		PrintWriter out = response.getWriter();
+		
+		out.println("<html><head></head><body>");
+		out.println("<h1>회원 가입 내용</h1>");
+		out.println("성명 : " + name + "<br>");
+		out.println("ID : " + id + "<br>");
+		out.println("비밀번호 : " + pw + "<br>");
+		out.println("휴대폰 번호 : " + phone + "<br>");
+		out.println("학년 : " + grade + "학년<br>");
+		out.println("관심분야 : ");
 		for (String str : interests) {
-			System.out.print(str + " ");
+			out.print(str + " ");
 		}
-		System.out.println("\n학과 : " + department);
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		out.println("<br>학과 : " + department + "<br>");
+		out.println("</body></html>");
 	}
 
 }
