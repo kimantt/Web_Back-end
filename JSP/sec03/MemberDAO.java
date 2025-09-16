@@ -8,7 +8,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 public class MemberDAO {
+	// ConnectionPool 사용 메서드 - DAO의 생성자 메서드 활용
+	private DataSource dataFactory;
+	public MemberDAO() {
+		try {
+			Context ctx = new InitialContext();
+			Context envContext = (Context)ctx.lookup("java:/comp/env"); // jndi에 접근하기 위한 기본경로 설정
+			this.dataFactory = (DataSource)envContext.lookup("jdbc/oracle");
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// DB 연결 담당 메소드 : DB 연결하고 Connection 객체 반환
 	private Connection getConnection() {
 		Connection con = null;
@@ -16,14 +33,14 @@ public class MemberDAO {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			
-			// DB 연결을 위한 연결 주소, 사용자 계정, 비밀번호 문자열 생성 
+			// DB 연결을 위한 연결 주소, 사용자 계정, 비밀번호 문자열 생성
 			String url = "jdbc:oracle:thin:@localhost:1521:xe";
 			String user = "C##SQL_USER";
 			String pwd = "1234";
 			
-			// DB 연결하기 위한 객체 생성 
-			// DriverManager 클래스를 통해 Connection 객체 받아옴 
-			// MySQL 서버 연결 : 주소, 사용자계정, 비밀번호 전송 
+			// DB 연결하기 위한 객체 생성
+			// DriverManager 클래스를 통해 Connection 객체 받아옴
+			// MySQL 서버 연결 : 주소, 사용자계정, 비밀번호 전송
 			con = DriverManager.getConnection(url, user, pwd);
 			
 			// Connection 객체가 생성되면(null이 아니면) DB 연결 성공 
@@ -51,7 +68,8 @@ public class MemberDAO {
 		
 		
 		try {
-			con = getConnection();
+			//con = getConnection(); // 사용자 정의 메서드
+			con = dataFactory.getConnection();
 			
 			String sql = "select * from member2";
 			pstmt = con.prepareStatement(sql);
@@ -90,7 +108,3 @@ public class MemberDAO {
 		return memList; // ArrayList 반환
 	}
 }
-
-
-
-
